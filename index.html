@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SpacyOS</title>
+  <style>
+    /* Общие стили */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      /* Пример классических обоев - их можно заменить на свои */
+      background-image: url('https://wallpaperaccess.com/full/337501.jpg');
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+    }
+    /* Иконки на рабочем столе */
+    .desktop-icon {
+      width: 80px;
+      text-align: center;
+      color: #fff;
+      margin: 10px;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .desktop-icon img {
+      width: 48px;
+      height: 48px;
+      display: block;
+      margin: 0 auto;
+    }
+    /* Оформление окон */
+    .window {
+      position: absolute;
+      background-color: #fff;
+      border: 1px solid #000;
+      width: 400px;
+      height: 300px;
+      top: 50px;
+      left: 50px;
+      display: none;
+      box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+    }
+    .window-header {
+      background-color: #0078d7;
+      color: #fff;
+      padding: 5px;
+      cursor: move;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .window-content {
+      padding: 10px;
+      overflow: auto;
+      height: calc(100% - 30px);
+    }
+    .close-btn {
+      cursor: pointer;
+      font-weight: bold;
+    }
+    /* Стили для панели задач */
+    #taskbar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      background-color: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      box-sizing: border-box;
+    }
+    #taskbar .taskbar-button {
+      color: #fff;
+      margin-right: 20px;
+      cursor: pointer;
+    }
+    /* Элементы форм */
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      margin: 5px 0;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Иконки на рабочем столе -->
+  <div id="desktop" style="position: absolute; top: 10px; left: 10px;">
+    <div class="desktop-icon" onclick="openWindow('computerWindow')">
+      <img src="https://img.icons8.com/fluency/48/computer.png" alt="Компьютер">
+      <div>Компьютер</div>
+    </div>
+    <div class="desktop-icon" onclick="openWindow('calendarWindow')">
+      <img src="https://img.icons8.com/fluency/48/calendar.png" alt="Календарь">
+      <div>Календарь</div>
+    </div>
+    <div class="desktop-icon" onclick="openWindow('reportWindow')">
+      <img src="https://img.icons8.com/fluency/48/report-card.png" alt="Отчёт">
+      <div>Отчёт</div>
+    </div>
+    <div class="desktop-icon" onclick="openWindow('reportHistoryWindow')">
+      <img src="https://img.icons8.com/fluency/48/time-machine.png" alt="История отчётов">
+      <div>История отчётов</div>
+    </div>
+    <div class="desktop-icon" onclick="openWindow('terminalWindow')">
+      <img src="https://img.icons8.com/fluency/48/console.png" alt="Терминал">
+      <div>Терминал</div>
+    </div>
+  </div>
+
+  <!-- Окно "Компьютер" -->
+  <div id="computerWindow" class="window">
+    <div class="window-header">
+      <span>Компьютер</span>
+      <span class="close-btn" onclick="closeWindow('computerWindow')">X</span>
+    </div>
+    <div class="window-content">
+      <p>Ваш омпьютер</p>
+      <p>Ос: SpacyOS</p>
+      <p>Системная папка: system32</p>
+      <p>Имя пользователя: user</p>
+    </div>
+  </div>
+
+  <!-- Окно "Календарь" -->
+  <div id="calendarWindow" class="window">
+    <div class="window-header">
+      <span>Календарь</span>
+      <span class="close-btn" onclick="closeWindow('calendarWindow')">X</span>
+	  </div>
+    <div class="window-content">
+      <form id="calendarForm">
+        <label for="selectedDate">Выберите дату:</label>
+        <input type="date" id="selectedDate" name="selectedDate" required>
+        <button type="submit">Сохранить дату</button>
+      </form>
+      <div id="calendarResult"></div>
+    </div>
+  </div>
+
+  <!-- Окно "Отчёт" -->
+  <div id="reportWindow" class="window">
+    <div class="window-header">
+      <span>Отчёт</span>
+      <span class="close-btn" onclick="closeWindow('reportWindow')">X</span>
+    </div>
+    <div class="window-content" id="reportContent">
+      <form id="reportForm">
+        <label>Сколько часов вы проработали:</label>
+        <input type="number" id="workTime" required>
+        <label>Сколько часов вы уделили программированию:</label>
+        <input type="number" id="codingTime" required>
+        <label>Погода:</label>
+        <select id="weather">
+          <option value="ясно">Ясно</option>
+          <option value="облачно">Облачно</option>
+          <option value="дождь">Дождь</option>
+          <option value="снег">Снег</option>
+        </select>
+        <label>Powered by:</label>
+        <input type="text" id="poweredBy" required>
+        <button type="submit">Отправить отчёт</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Окно "История отчётов" -->
+  <div id="reportHistoryWindow" class="window">
+    <div class="window-header">
+      <span>История отчётов</span>
+      <span class="close-btn" onclick="closeWindow('reportHistoryWindow')">X</span>
+    </div>
+    <div class="window-content">
+      <div id="reportHistoryContent">Нет отчётов</div>
+    </div>
+  </div>
+
+  <!-- Окно "Терминал" -->
+  <div id="terminalWindow" class="window">
+    <div class="window-header">
+      <span>Терминал</span>
+      <span class="close-btn" onclick="closeWindow('terminalWindow')">X</span>
+    </div>
+    <div class="window-content">
+      <div id="terminalOutput" style="height: 200px; overflow-y: auto; border:1px solid #ccc; padding:5px; background:#000; color:#0f0;"></div>
+      <input type="text" id="terminalInput" placeholder="Введите команду..." onkeydown="if(event.key === 'Enter') handleTerminalCommand()">
+    </div>
+  </div>
+
+  <!-- Окно "Меню Пуск" -->
+  <div id="startMenuWindow" class="window" style="width: 200px; height: 100px;">
+    <div class="window-header">
+      <span>Меню Пуск</span>
+      <span class="close-btn" onclick="closeWindow('startMenuWindow')">X</span>
+    </div>
+    <div class="window-content">
+      <p>User</p>
+    </div>
+  </div>
+
+  <!-- Окно "Блокнот" -->
+  <div id="notepadWindow" class="window">
+    <div class="window-header">
+      <span>Блокнот</span>
+      <span class="close-btn" onclick="closeWindow('notepadWindow')">X</span>
+    </div>
+    <div class="window-content">
+      <textarea id="notepadContent" rows="10" style="width: 100%;"></textarea>
+      <button onclick="saveNotepad()">Сохранить</button>
+    </div>
+  </div>
+
+  <!-- Окно "Настройки" -->
+  <div id="settingsWindow" class="window">
+    <div class="window-header">
+      <span>Настройки</span>
+      <span class="close-btn" onclick="closeWindow('settingsWindow')">X</span>
+    </div>
+    <div class="window-content">
+      <p>Настройки системы (функционал можно расширить)</p>
+      <label><input type="checkbox" id="soundToggle"> Включить звук</label>
+    </div>
+  </div>
+
+  <!-- Окно "Проводник" -->
+  <div id="explorerWindow" class="window">
+    <div class="window-header">
+      <span>Проводник</span>
+      <span class="close-btn" onclick="closeWindow('explorerWindow')">X</span>
+    </div>
+    <div class="window-content">
+      <button onclick="openSystem32()">system32</button>
+      <div id="explorerContent"></div>
+    </div>
+  </div>
+
+  <!-- Панель задач -->
+  <div id="taskbar">
+    <span class="taskbar-button" onclick="openWindow('startMenuWindow')">Меню Пуск</span>
+	<span class="taskbar-button" onclick="openWindow('notepadWindow')">Блокнот</span>
+    <span class="taskbar-button" onclick="openWindow('settingsWindow')">Настройки</span>
+    <span class="taskbar-button" onclick="openWindow('explorerWindow')">Проводник</span>
+    <div style="margin-left: auto; color: #fff;" id="taskbarClock"></div>
+  </div>
+
+  <script>
+    // Функции открытия и закрытия окон
+    function openWindow(id) {
+      document.getElementById(id).style.display = 'block';
+      if(id === 'reportHistoryWindow'){
+        loadReportHistory();
+      }
+      if(id === 'notepadWindow'){
+        loadNotepad();
+      }
+    }
+    function closeWindow(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    // Обновление часов в панели задач
+    function updateClock() {
+      const clock = document.getElementById('taskbarClock');
+      const now = new Date();
+      clock.textContent = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // Форма "Календарь" – сохранение выбранной даты
+    document.getElementById('calendarForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const date = document.getElementById('selectedDate').value;
+      document.getElementById('calendarResult').textContent = 'Вы выбрали дату: ' + date;
+      // Сохраняем дату в LocalStorage (при необходимости)
+      localStorage.setItem('selectedDate', date);
+    });
+
+    // Форма "Отчёт"
+    document.getElementById('reportForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const workTime = document.getElementById('workTime').value;
+      const codingTime = document.getElementById('codingTime').value;
+      const weather = document.getElementById('weather').value;
+      const poweredBy = document.getElementById('poweredBy').value;
+      const now = new Date();
+      const dateStr = now.toLocaleDateString();
+      // Сохраняем отчёт в историю (массив в LocalStorage)
+      let reportHistory = JSON.parse(localStorage.getItem('reportHistory')) || [];
+      reportHistory.push({
+        workTime,
+        codingTime,
+        weather,
+        poweredBy,
+        date: dateStr
+      });
+      localStorage.setItem('reportHistory', JSON.stringify(reportHistory));
+      // Меняем интерфейс окна на подтверждение отправки
+      const reportContent = document.getElementById('reportContent');
+      reportContent.innerHTML = '<h3>Отчёт отправлен!</h3><p>' + dateStr + '</p>';
+    });
+
+    // Функция загрузки истории отчётов для окна "История отчётов"
+    function loadReportHistory() {
+      const historyDiv = document.getElementById('reportHistoryContent');
+      let reportHistory = JSON.parse(localStorage.getItem('reportHistory')) || [];
+      if(reportHistory.length === 0) {
+        historyDiv.innerHTML = '<p>Нет отчётов</p>';
+      } else {
+        let html = '<ul>';
+        reportHistory.forEach((report, index) => {
+          html += '<li><strong>Отчёт ' + (index+1) + '</strong>: ' +
+                  'Время работы: ' + report.workTime + ', ' +
+                  'Программирование: ' + report.codingTime + ', ' +
+                  'Погода: ' + report.weather + ', ' +
+                  'Powered by: ' + report.poweredBy + ' (' + report.date + ')</li>';
+        });
+        html += '</ul>';
+        historyDiv.innerHTML = html;
+      }
+    }
+
+    // Обработка команд терминала
+    function handleTerminalCommand() {
+      const input = document.getElementById('terminalInput');
+      const command = input.value.trim();
+      const output = document.getElementById('terminalOutput');
+      if(command === "hello spos") {
+        output.innerHTML += "<div>hello user!</div>";
+      } else {
+        output.innerHTML += "<div>unknown command</div>";
+      }
+      input.value = "";
+      output.scrollTop = output.scrollHeight;
+    }
+	// Блокнот – сохранение и загрузка содержимого
+    function saveNotepad() {
+      const content = document.getElementById('notepadContent').value;
+      localStorage.setItem('notepadContent', content);
+      alert('Сохранено!');
+    }
+    function loadNotepad() {
+      const content = localStorage.getItem('notepadContent') || "";
+      document.getElementById('notepadContent').value = content;
+    }
+
+    // Проводник – открытие системной папки system32
+    function openSystem32() {
+      document.getElementById('explorerContent').textContent = "Operating system SpacyOS";
+    }
+
+    // Простейшая реализация перетаскивания окон
+    const windows = document.getElementsByClassName('window');
+    Array.from(windows).forEach(win => {
+      const header = win.querySelector('.window-header');
+      header.onmousedown = function(e) {
+        let shiftX = e.clientX - win.getBoundingClientRect().left;
+        let shiftY = e.clientY - win.getBoundingClientRect().top;
+
+        function moveAt(pageX, pageY) {
+          win.style.left = pageX - shiftX + 'px';
+          win.style.top = pageY - shiftY + 'px';
+        }
+        function onMouseMove(e) {
+          moveAt(e.pageX, e.pageY);
+        }
+        document.addEventListener('mousemove', onMouseMove);
+        document.onmouseup = function() {
+          document.removeEventListener('mousemove', onMouseMove);
+          document.onmouseup = null;
+        };
+      };
+      header.ondragstart = function() {
+        return false;
+      };
+    });
+  </script>
+</body>
+</html>
